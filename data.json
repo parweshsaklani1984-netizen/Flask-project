@@ -1,0 +1,12 @@
+[
+  {
+    "id": 1,
+    "title": "Welcome",
+    "description": "This data is served by the Flask JSON API."
+  },
+  {
+    "id": 2,
+    "title": "API status",
+    "description": "The /api route is ready."
+  }
+]
