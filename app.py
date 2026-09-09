@@ -24,6 +24,15 @@ def create_app():
     def index():
         return render_template("index.html")
 
+    @app.route("/todo", methods=["GET", "POST"])
+    def todo():
+        form_data = request.form if request.method == "POST" else None
+        return render_template(
+            "todo.html",
+            form_data=form_data,
+            submitted=request.method == "POST",
+        )
+
     @app.get("/api")
     def api():
         try:
