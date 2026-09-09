@@ -32,6 +32,9 @@
       <label for="item-uuid">Item UUID</label>
       <input id="item-uuid" name="item_uuid" type="text" value="{{ form_data.get('item_uuid', '') if form_data else '' }}" required>
      
+       <label for="item-hash">Item Hash</label>
+      <input id="item-hash" name="item_hash" type="text" value="{{ form_data.get('item_hash', '') if form_data else '' }}" required>
+
       <label for="item-name">Item Name</label>
       <input id="item-name" name="item_name" type="text" value="{{ form_data.get('item_name', '') if form_data else '' }}" required>
 
