@@ -9,4 +9,10 @@
     "title": "API status",
     "description": "The /api route is ready."
   }
+  ,
+  {
+    "id":3,
+    "title": "API status 123",
+    "description": "The /api route is ready."
+  }
 ]
