@@ -19,6 +19,9 @@ def create_app():
     app.config["MONGO_URI"] = os.getenv("MONGO_URI") or os.getenv("MONGODB_URI", "")
     app.config["MONGO_DB_NAME"] = os.getenv("MONGO_DB_NAME", "flask_app")
     app.config["MONGO_COLLECTION_NAME"] = os.getenv("MONGO_COLLECTION_NAME", "submissions")
+    app.config["MONGO_TODO_COLLECTION_NAME"] = os.getenv(
+        "MONGO_TODO_COLLECTION_NAME", "todo_items"
+    )
 
     @app.get("/")
     def index():
@@ -33,6 +36,44 @@ def create_app():
             return jsonify({"error": "Unable to read API data."}), 500
 
         return jsonify(data)
+
+    @app.post("/submittodoitem")
+    def submit_todo_item():
+        payload = request.get_json(silent=True) or request.form
+        item_name = payload.get("itemName", "").strip()
+        item_description = payload.get("itemDescription", "").strip()
+
+        if not item_name or not item_description:
+            return jsonify({
+                "error": "itemName and itemDescription are required."
+            }), 400
+
+        mongo_uri = app.config["MONGO_URI"]
+        if not mongo_uri:
+            return jsonify({
+                "error": "MongoDB is not configured. Add MONGO_URI to the .env file and restart the app."
+            }), 500
+
+        client = None
+        try:
+            client = MongoClient(mongo_uri, serverSelectionTimeoutMS=5000)
+            client.admin.command("ping")
+            collection = client[app.config["MONGO_DB_NAME"]][
+                app.config["MONGO_TODO_COLLECTION_NAME"]
+            ]
+            collection.insert_one({
+                "itemName": item_name,
+                "itemDescription": item_description,
+            })
+        except PyMongoError:
+            return jsonify({
+                "error": "Unable to save the to-do item right now. Please try again."
+            }), 500
+        finally:
+            if client is not None:
+                client.close()
+
+        return jsonify({"message": "To-do item submitted successfully."}), 201
 
     @app.post("/submit")
     def submit():
